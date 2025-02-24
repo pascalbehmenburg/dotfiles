@@ -1,0 +1,13 @@
+*.bak
+.config/fish/conf.d/fish_frozen_*
+
+# Secrets / credentials
+.env
+.env.*
+*secrets*.py
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+id_dsa*
+*.smbcredentials

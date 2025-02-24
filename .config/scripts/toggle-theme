@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Toggle between dark and light themes for Alacritty and Waybar.
+# Usage: toggle-theme [dark|light]
+#   No argument: toggles between dark/light
+#   Argument:    sets the specified theme
+
+set -euo pipefail
+
+STATE_FILE="$HOME/.config/theme"
+ALACRITTY_THEMES="$HOME/.config/alacritty/themes"
+WAYBAR_DIR="$HOME/.config/waybar"
+
+# Determine current theme
+current="dark"
+[[ -f "$STATE_FILE" ]] && current=$(cat "$STATE_FILE")
+
+# Determine target theme
+if [[ $# -ge 1 ]]; then
+    target="$1"
+else
+    [[ "$current" == "dark" ]] && target="light" || target="dark"
+fi
+
+if [[ "$target" != "dark" && "$target" != "light" ]]; then
+    echo "Usage: toggle-theme [dark|light]"
+    exit 1
+fi
+
+# -- Alacritty --
+ln -sf "$ALACRITTY_THEMES/$target.toml" "$ALACRITTY_THEMES/current.toml"
+# Touch main config to trigger inotify reload
+touch "$HOME/.config/alacritty/alacritty.toml"
+
+# -- Waybar --
+cat "$WAYBAR_DIR/themes/$target.css" "$WAYBAR_DIR/base-style.css" > "$WAYBAR_DIR/style.css"
+# Reload waybar
+killall -SIGUSR2 waybar 2>/dev/null || true
+
+# -- System color scheme (portal / GTK / Qt) --
+if [[ "$target" == "dark" ]]; then
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+else
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
+fi
+
+# Save state
+echo "$target" > "$STATE_FILE"
+
+echo "Switched to $target theme"

@@ -1,0 +1,127 @@
+/* Alacritty-matched dark theme for Obsidian
+ * Source of truth: .config/alacritty/alacritty.toml
+ *
+ * Backgrounds: #111113, #1a1a1e, #0d0d0f, #01060e
+ * Text:        #c8c8c8 normal, #686868 muted
+ * Accents:     blue #53bdfa/#59c2ff, green #91b362, cyan #90e1c6
+ */
+
+body {
+    --background-primary: #111113;
+    --background-primary-alt: #1a1a1e;
+    --background-secondary: #0d0d0f;
+    --background-secondary-alt: #01060e;
+    --background-modifier-border: #252530;
+    --background-modifier-form-field: #1a1a1e;
+    --background-modifier-form-field-highlighted: #252530;
+    --background-modifier-box-shadow: rgba(0, 0, 0, 0.3);
+    --background-modifier-success: #91b362;
+    --background-modifier-error: #f07178;
+    --background-modifier-error-rgb: 240, 113, 120;
+    --background-modifier-error-hover: #e06c75;
+    --background-modifier-cover: rgba(0, 0, 0, 0.8);
+
+    --text-normal: #c8c8c8;
+    --text-muted: #686868;
+    --text-faint: #4a4a4a;
+    --text-on-accent: #111113;
+    --text-on-accent-inverted: #c8c8c8;
+    --text-error: #f07178;
+    --text-error-hover: #e06c75;
+    --text-success: #91b362;
+    --text-selection: rgba(83, 189, 250, 0.2);
+    --text-accent: #53bdfa;
+    --text-accent-hover: #59c2ff;
+
+    --interactive-normal: #1a1a1e;
+    --interactive-hover: #252530;
+    --interactive-accent: #53bdfa;
+    --interactive-accent-rgb: 83, 189, 250;
+    --interactive-accent-hover: #59c2ff;
+
+    --scrollbar-active-thumb-bg: rgba(200, 200, 200, 0.2);
+    --scrollbar-bg: rgba(0, 0, 0, 0);
+    --scrollbar-thumb-bg: rgba(200, 200, 200, 0.1);
+
+    --highlight-mix-blend-mode: lighten;
+
+    --tab-text-color-focused-active: #c8c8c8;
+    --tab-text-color-focused-active-current: #59c2ff;
+
+    --titlebar-background: #0d0d0f;
+    --titlebar-background-focused: #111113;
+}
+
+/* Headings */
+.markdown-rendered h1,
+.cm-header-1 {
+    color: #53bdfa;
+}
+.markdown-rendered h2,
+.cm-header-2 {
+    color: #59c2ff;
+}
+.markdown-rendered h3,
+.cm-header-3 {
+    color: #91b362;
+}
+.markdown-rendered h4,
+.cm-header-4 {
+    color: #90e1c6;
+}
+.markdown-rendered h5,
+.cm-header-5 {
+    color: #c2d94c;
+}
+.markdown-rendered h6,
+.cm-header-6 {
+    color: #686868;
+}
+
+/* Code blocks */
+.markdown-rendered code,
+.cm-s-obsidian span.cm-inline-code {
+    color: #c2d94c;
+    background-color: #01060e;
+}
+.markdown-rendered pre,
+.cm-s-obsidian .HyperMD-codeblock {
+    background-color: #01060e;
+}
+
+/* Links */
+a.internal-link {
+    color: #53bdfa;
+}
+a.internal-link:hover {
+    color: #59c2ff;
+}
+a.external-link {
+    color: #90e1c6;
+}
+a.external-link:hover {
+    color: #95eacf;
+}
+a.is-unresolved {
+    color: #f07178;
+}
+
+/* Tags */
+.tag {
+    background-color: #1a1a1e;
+    color: #90e1c6;
+}
+
+/* Blockquotes */
+.markdown-rendered blockquote {
+    border-left-color: #53bdfa;
+    background-color: #0d0d0f;
+}
+
+/* Bold and italic */
+strong, .cm-strong {
+    color: #e6b450;
+}
+em, .cm-em {
+    color: #90e1c6;
+}
