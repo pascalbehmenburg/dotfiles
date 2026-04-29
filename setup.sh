@@ -287,7 +287,7 @@ if [ "$user_confirmation" != "n" ]; then
         hyprland
         kvantum
         kvantum-theme-nordic-git
-        mako
+        swaync
         polkit-kde-agent
         rofi-emoji
         slurp

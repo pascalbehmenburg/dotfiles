@@ -19,13 +19,6 @@
             "default": ""
         }
     },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
-    },
     "pulseaudio": {
         "format": "{icon}  {volume}%",
         "format-bluetooth": "{icon} {volume}%  {format_source}",
@@ -70,11 +63,6 @@
         "critical-threshold": 100,
         "format-critical": " {temperatureC}",
         "format": " {temperatureC}°C"
-    },
-    "hyprland/language": {
-        "format": "  {}",
-        "format-en": "EN",
-        "format-ru": "RU"
     },
     "battery": {
         "states": {
