@@ -93,6 +93,36 @@ if [ "$user_confirmation" != "n" ]; then
     echo "Enable snippets in Obsidian: Settings > Appearance > CSS snippets"
 fi
 
+# Symlink EasyEffects presets into the local share dir
+read -p "Do you want to symlink the EasyEffects presets? [default: y] (y/n): " user_confirmation
+if [ "$user_confirmation" != "n" ]; then
+    for pipeline in output input; do
+        EE_DIR="$HOME/.local/share/easyeffects/$pipeline"
+        mkdir -p "$EE_DIR"
+        for preset in easyeffects/$pipeline/*.json; do
+            [ -e "$preset" ] || continue
+            name=$(basename "$preset")
+            target="$EE_DIR/$name"
+            if [ -L "$target" ]; then
+                current_link=$(readlink -f "$target")
+                repo_path=$(readlink -f "$preset")
+                if [ "$current_link" = "$repo_path" ]; then
+                    echo "Preset $name already linked, skipping"
+                    continue
+                else
+                    echo "Updating preset symlink for $name"
+                    rm "$target"
+                fi
+            elif [ -e "$target" ]; then
+                echo "Backing up existing $target"
+                mv "$target" "$target.bak"
+            fi
+            ln -s "$(pwd)/$preset" "$target"
+            echo "Linked preset: $target -> $(pwd)/$preset"
+        done
+    done
+    echo "Apply them with: easyeffects -l bass-boost; easyeffects -l mic-denoise"
+fi
 # Install all packages using paru (AUR helper + pacman interface)
 read -p "Do you want to update, upgrade and install all required packages? [default: y] (y/n): " user_confirmation
 if [ "$user_confirmation" != "n" ]; then
@@ -213,18 +243,23 @@ if [ "$user_confirmation" != "n" ]; then
         alsa-firmware
         alsa-plugins
         alsa-utils
+        calf
+        easyeffects
         ffmpegthumbnailer
         gst-libav
         gst-plugin-pipewire
         gst-plugins-bad
         gst-plugins-ugly
         libdvdcss
+        lsp-plugins-lv2
+        mda.lv2
         pamixer
         pavucontrol
         pipewire-alsa
         pipewire-pulse
         rtkit
         wireplumber
+        zam-plugins
 
         # Bluetooth
         bluez
@@ -285,6 +320,7 @@ if [ "$user_confirmation" != "n" ]; then
         bemenu-wayland
         grimblast-git
         hyprland
+        hyprsunset
         kvantum
         kvantum-theme-nordic-git
         swaync
@@ -350,7 +386,7 @@ if [ "$user_confirmation" != "n" ]; then
 
         # Desktop applications
         alacritty
-        betterbird-bin
+        thunderbird
         bitwarden
         discord
         libreoffice-still
