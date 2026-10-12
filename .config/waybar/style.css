@@ -1,67 +1,111 @@
-@define-color bg #111113;
-@define-color fg #c8c8c8;
-@define-color hover_bg #1a1a1e;
-@define-color active_bg #252530;
-@define-color workspace_fg #c0caf5;
-@define-color workspace_hover_bg #11111b;
-@define-color workspace_hover_fg #cdd6f4;
+/* Color palette: symlink to themes/{dark,light}.css, swapped by hypr/scripts/theme */
+@import url("colors.css");
+
 * {
-    /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
-    font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 15px;
-    transition: background-color .3s ease-out;
+    /* Text in Fira Sans, every icon from FiraCode Nerd Font (ttf-firacode-nerd). */
+    font-family: "Fira Sans Semibold", "FiraCode Nerd Font Propo", sans-serif;
+    font-size: 14px;
+    min-height: 0;
+    transition: background-color .3s ease-out, opacity .3s ease-out;
 }
 
+/* Bar itself is invisible; the three module areas float as pills. */
 window#waybar {
-    background: @bg;
+    background: transparent;
     color: @fg;
-    font-family:
-        SpaceMono Nerd Font,
-        feather;
-    transition: background-color .5s;
 }
 
 .modules-left,
 .modules-center,
-.modules-right
-{
+.modules-right {
     background: @bg;
-    margin: 5px 10px;
-    padding: 0 5px;
+    border: 1px solid @border;
     border-radius: 15px;
+    margin: 5px 8px 0;
+    padding: 2px 4px;
 }
-.modules-left {
-    padding: 0;
-}
+
 .modules-center {
+    padding: 2px 12px;
+}
+
+/* Hide the center pill when no window is focused. */
+window#waybar.empty .modules-center {
+    background: transparent;
+    border-color: transparent;
+}
+
+/* -- Modules ---------------------------------------------------------- */
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#temperature,
+#network,
+#pulseaudio,
+#tray,
+#custom-screenshot,
+#custom-warmth,
+#custom-theme,
+#custom-notification {
     padding: 0 10px;
+    border-radius: 12px;
+}
+
+/* Icon-only buttons sit a little tighter. */
+#custom-screenshot,
+#custom-warmth,
+#custom-theme,
+#network,
+#custom-notification {
+    padding: 0 8px;
 }
 
 #clock,
 #battery,
 #cpu,
 #memory,
-#disk,
 #temperature,
-#backlight,
 #network,
 #pulseaudio,
-#wireplumber,
-#custom-media,
-#tray,
-#mode,
-#idle_inhibitor,
-#scratchpad,
-#power-profiles-daemon,
-#language,
-#mpd,
+#custom-screenshot,
+#custom-warmth,
+#custom-theme,
 #custom-notification {
-    padding: 0 10px;
-    border-radius: 15px;
+    font-feature-settings: "tnum";
 }
 
-#custom-notification {
-    font-family: "SpaceMono Nerd Font", "Fira Sans Semibold";
+#clock:hover,
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#network:hover,
+#pulseaudio:hover,
+#custom-screenshot:hover,
+#custom-warmth:hover,
+#custom-theme:hover,
+#custom-notification:hover {
+    background: @hover_bg;
+}
+
+#custom-warmth.active {
+    color: #ffb454;
+}
+
+#pulseaudio.muted,
+#network.disconnected {
+    opacity: .5;
+}
+
+#battery.warning:not(.charging) {
+    color: #ffb454;
+}
+
+#battery.critical:not(.charging),
+#temperature.critical {
+    color: #ff453a;
 }
 
 #custom-notification.notification,
@@ -71,47 +115,63 @@ window#waybar {
     color: #ff453a;
 }
 
-#clock:hover,
-#battery:hover,
-#cpu:hover,
-#memory:hover,
-#disk:hover,
-#temperature:hover,
-#backlight:hover,
-#network:hover,
-#pulseaudio:hover,
-#wireplumber:hover,
-#custom-media:hover,
-#tray:hover,
-#mode:hover,
-#idle_inhibitor:hover,
-#scratchpad:hover,
-#power-profiles-daemon:hover,
-#language:hover,
-#mpd:hover,
-#custom-notification:hover {
+/* -- Tray ------------------------------------------------------------- */
+
+#tray {
+    padding: 0 6px;
+}
+
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background: @active_bg;
+}
+
+#tray > widget {
+    padding: 0 4px;
+    border-radius: 12px;
+}
+
+#tray > widget:hover {
     background: @hover_bg;
 }
 
+/* -- Workspaces ------------------------------------------------------- */
+
 #workspaces button {
-  background: transparent;
-  font-family:
-    workspace-icons,
-    SpaceMono Nerd Font,
-    feather;
-  font-weight: 900;
-  font-size: 13pt;
-  color: @workspace_fg;
-  border:none;
-  border-radius: 15px;
+    background: transparent;
+    color: @workspace_fg;
+    border: none;
+    border-radius: 12px;
+    padding: 0 8px;
+    box-shadow: none;
 }
 
 #workspaces button.active {
     background: @active_bg;
 }
 
+#workspaces button.empty {
+    opacity: .45;
+}
+
 #workspaces button:hover {
-  background: @workspace_hover_bg;
-  color: @workspace_hover_fg;
-  box-shadow: none;
+    background: @workspace_hover_bg;
+    color: @workspace_hover_fg;
+}
+
+#workspaces .workspace-label {
+    font-size: 12px;
+    padding-right: 4px;
+}
+
+#workspaces button.empty .workspace-label {
+    padding-right: 0;
+}
+
+#workspaces .taskbar-window {
+    padding: 0 2px;
 }

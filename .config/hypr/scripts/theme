@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+# System-wide light / dark / auto theme switch, driven from a waybar button.
+# Auto mode follows the sun: light from sunrise to sunset, dark otherwise.
+# Usage:
+#   theme                  -> print waybar JSON status (in auto mode also applies
+#                             the theme when sunrise/sunset has passed)
+#   theme cycle            -> light -> dark -> auto -> light ...
+#   theme light|dark|auto  -> set a mode directly
+
+# Location used for sunrise/sunset in auto mode (decimal degrees, east/north positive).
+LAT=52.52
+LON=13.40
+
+STATE_DIR="$HOME/.local/state/theme"
+MODE_FILE="$STATE_DIR/mode"        # light | dark | auto (what the user picked)
+APPLIED_FILE="$STATE_DIR/applied"  # light | dark (what is currently applied)
+
+GTK_DARK="cachyos-nord"
+GTK_LIGHT="Adwaita"
+KVANTUM_DARK="Nordic-Darker-Solid"
+KVANTUM_LIGHT="KvGnome"
+
+ICON_LIGHT=$(printf '\U000F05A8')  # md-white_balance_sunny
+ICON_DARK=$(printf '\U000F0594')   # md-weather_night
+ICON_AUTO=$(printf '\U000F050E')   # md-theme_light_dark
+
+mkdir -p "$STATE_DIR"
+
+get_mode() { cat "$MODE_FILE" 2>/dev/null || echo dark; }
+get_applied() { cat "$APPLIED_FILE" 2>/dev/null || echo none; }
+
+# Prints "<light|dark> <HH:MM of next switch>" for the current moment.
+sun_state() {
+    python3 - "$LAT" "$LON" <<'EOF'
+import sys, math, time, datetime as dt
+
+lat, lon = float(sys.argv[1]), float(sys.argv[2])
+rad, deg = math.radians, math.degrees
+
+def sun_times(day):
+    # Sunrise equation (https://en.wikipedia.org/wiki/Sunrise_equation), returns unix timestamps.
+    n = (day - dt.date(2000, 1, 1)).days + 0.0008
+    j = n - lon / 360
+    m = (357.5291 + 0.98560028 * j) % 360
+    c = 1.9148 * math.sin(rad(m)) + 0.02 * math.sin(rad(2 * m)) + 0.0003 * math.sin(rad(3 * m))
+    lam = (m + c + 180 + 102.9372) % 360
+    transit = 2451545.0 + j + 0.0053 * math.sin(rad(m)) - 0.0069 * math.sin(rad(2 * lam))
+    decl = math.asin(math.sin(rad(lam)) * math.sin(rad(23.4397)))
+    cos_w = (math.sin(rad(-0.833)) - math.sin(rad(lat)) * math.sin(decl)) / (math.cos(rad(lat)) * math.cos(decl))
+    if cos_w > 1:   # polar night
+        return None, None
+    if cos_w < -1:  # midnight sun
+        return float("-inf"), float("inf")
+    w = deg(math.acos(cos_w)) / 360
+    to_unix = lambda jd: (jd - 2440587.5) * 86400
+    return to_unix(transit - w), to_unix(transit + w)
+
+now = time.time()
+today = dt.date.today()
+rise, sset = sun_times(today)
+if rise is None:
+    print("dark --:--")
+elif rise <= now < sset:
+    print("light", time.strftime("%H:%M", time.localtime(sset)) if sset != float("inf") else "--:--")
+else:
+    nxt = rise if now < rise else sun_times(today + dt.timedelta(days=1))[0]
+    print("dark", time.strftime("%H:%M", time.localtime(nxt)) if nxt not in (None, float("-inf")) else "--:--")
+EOF
+}
+
+apply() {
+    local target=$1 gtk kvantum scheme
+    if [[ $target == light ]]; then
+        gtk=$GTK_LIGHT; kvantum=$KVANTUM_LIGHT; scheme=prefer-light
+    else
+        gtk=$GTK_DARK; kvantum=$KVANTUM_DARK; scheme=prefer-dark
+    fi
+
+    # Portal color-scheme (GTK4/libadwaita, browsers, Electron) and GTK3 theme.
+    gsettings set org.gnome.desktop.interface color-scheme "$scheme"
+    gsettings set org.gnome.desktop.interface gtk-theme "$gtk"
+
+    # Qt apps via qt5ct -> kvantum (picked up by newly started apps).
+    local kv="$HOME/.config/Kvantum/kvantum.kvconfig"
+    [[ -f $kv ]] && sed -i "s/^theme=.*/theme=$kvantum/" "$kv"
+
+    # Alacritty live-reloads the imported theme file.
+    local alacritty="$HOME/.config/alacritty/themes"
+    ln -sfn "$alacritty/$target.toml" "$alacritty/current.toml"
+    touch "$HOME/.config/alacritty/alacritty.toml"
+
+    # Hyprland border and shadow colors: symlink persists them, keywords apply them now.
+    local hypr="$HOME/.config/hypr/config"
+    ln -sfn "themes/$target.conf" "$hypr/theme.conf"
+    local active inactive shadow
+    active=$(sed -n 's/^\$borderactive = //p' "$hypr/themes/$target.conf")
+    inactive=$(sed -n 's/^\$borderinactive = //p' "$hypr/themes/$target.conf")
+    shadow=$(sed -n 's/^\$shadowcolor = //p' "$hypr/themes/$target.conf")
+    hyprctl --batch "keyword general:col.active_border $active; keyword general:col.inactive_border $inactive; keyword decoration:shadow:color $shadow" >/dev/null
+
+    # Notifications (swaync reloads its CSS in place) and the lock screen config.
+    # wofi and wlogout import waybar's colors.css, so they follow automatically.
+    ln -sfn "themes/$target.css" "$HOME/.config/swaync/colors.css"
+    swaync-client --reload-css >/dev/null 2>&1
+    ln -sfn "themes/$target.conf" "$HOME/.config/swaylock/config"
+
+    # Waybar colors. A content write to style.css triggers reload_style_on_change;
+    # a full SIGUSR2 reload is avoided because it can abort waybar 0.15.
+    local waybar="$HOME/.config/waybar"
+    ln -sfn "themes/$target.css" "$waybar/colors.css"
+    local css
+    css=$(<"$waybar/style.css") && printf '%s\n' "$css" > "$waybar/style.css"
+
+    echo "$target" > "$APPLIED_FILE"
+}
+
+desired_theme() {
+    local mode
+    mode=$(get_mode)
+    if [[ $mode == auto ]]; then
+        sun_state | cut -d' ' -f1
+    else
+        echo "$mode"
+    fi
+}
+
+set_mode() {
+    echo "$1" > "$MODE_FILE"
+    local target
+    target=$(desired_theme)
+    [[ $target != "$(get_applied)" ]] && apply "$target"
+    pkill -RTMIN+9 -x waybar
+}
+
+case "$1" in
+    cycle)
+        case $(get_mode) in
+            light) set_mode dark ;;
+            dark)  set_mode auto ;;
+            *)     set_mode light ;;
+        esac
+        ;;
+    light|dark|auto)
+        set_mode "$1"
+        ;;
+    *)
+        mode=$(get_mode)
+        if [[ $mode == auto ]]; then
+            read -r target next < <(sun_state)
+            [[ $target != "$(get_applied)" ]] && apply "$target"
+            [[ $target == light ]] && when="sunset" || when="sunrise"
+            printf '{"text":"%s","tooltip":"Theme: auto (%s now, %s at %s) - click to cycle","class":"auto","alt":"auto"}\n' \
+                "$ICON_AUTO" "$target" "$when" "$next"
+        else
+            [[ $mode != "$(get_applied)" ]] && apply "$mode"
+            [[ $mode == light ]] && icon=$ICON_LIGHT || icon=$ICON_DARK
+            printf '{"text":"%s","tooltip":"Theme: %s - click to cycle","class":"%s","alt":"%s"}\n' \
+                "$icon" "$mode" "$mode" "$mode"
+        fi
+        ;;
+esac

@@ -1,46 +1,71 @@
+/* Uses the waybar palette (@bg, @fg, ...). wofi/launch prepends it at startup,
+   because wofi cannot resolve @import. Launch via wofi/launch, not plain wofi. */
+
 * {
-    font-family: "Hack", monospace;
+    font-family: "Fira Sans Semibold", "FiraCode Nerd Font Propo", sans-serif;
+    font-size: 14px;
 }
 
 window {
-    background-color: #3B4252;
-}
-
-#input {
-    margin: 5px;
-    border-radius: 0px;
-    border: none;
-    background-color: #3B4252;
-    color: white;
-}
-
-#inner-box {
-    background-color: #383C4A;
+    background-color: @bg;
+    border: 1px solid @border;
+    border-radius: 15px;
 }
 
 #outer-box {
-    margin: 2px;
+    margin: 0;
     padding: 10px;
-    background-color: #383C4A;
+    background-color: transparent;
 }
 
+#input {
+    margin: 0 0 8px 0;
+    padding: 6px 10px;
+    border: 1px solid @border;
+    border-radius: 10px;
+    background-color: @hover_bg;
+    color: @fg;
+    box-shadow: none;
+}
+
+#input:focus {
+    border-color: @workspace_fg;
+}
+
+#inner-box,
 #scroll {
-    margin: 5px;
+    margin: 0;
+    background-color: transparent;
 }
 
-#text {
-    padding: 4px;
-    color: white;
-}
-
-#entry:nth-child(even){
-    background-color: #404552;
+#entry {
+    padding: 6px 8px;
+    border-radius: 10px;
 }
 
 #entry:selected {
-    background-color: #4C566A;
+    background-color: @active_bg;
+}
+
+#text {
+    padding: 0 4px;
+    color: @fg;
 }
 
 #text:selected {
+    color: @fg;
     background: transparent;
+}
+
+#img {
+    margin-right: 4px;
+}
+
+/* Collapse the expander arrow of entries with desktop actions so rows stay aligned. */
+#entry arrow {
+    -gtk-icon-source: none;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
 }

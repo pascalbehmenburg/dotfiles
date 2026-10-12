@@ -4,3 +4,7 @@ no_actions=false
 term=alacritty
 mode=drun
 --show
+width=560
+height=440
+prompt=Search
+insensitive=true

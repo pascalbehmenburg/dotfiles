@@ -5,6 +5,8 @@
     // "height": 20, // Waybar height (to be removed for auto height)
     // "width": 1280, // Waybar width
     "spacing": 2, // Gaps between modules (4px)
+    // Re-apply CSS when style.css changes; the theme script touches it to swap colors.
+    "reload_style_on_change": true,
     // Choose the order of the modules
     "modules-left": [
         "hyprland/workspaces"
@@ -13,29 +15,50 @@
         "hyprland/window"
     ],
     "modules-right": [
-        "custom/screenshot",
+        "group/quick",
         "pulseaudio",
         "network",
-        "cpu",
-        "memory",
-        "temperature",
-        "battery",
-        "battery#bat2",
+        "group/system",
         "clock",
+        "tray",
         "custom/notification"
     ],
+    // Screenshot, warmth and theme share one pill.
+    "group/quick": {
+        "orientation": "inherit",
+        "modules": [
+            "custom/screenshot",
+            "custom/warmth",
+            "custom/theme"
+        ]
+    },
+    // Battery is always visible; cpu, memory and temperature slide out on hover.
+    "group/system": {
+        "orientation": "inherit",
+        "drawer": {
+            "transition-duration": 300,
+            "children-class": "system-child",
+            "transition-left-to-right": false
+        },
+        "modules": [
+            "battery",
+            "cpu",
+            "memory",
+            "temperature"
+        ]
+    },
     "custom/notification": {
         "tooltip": false,
         "format": "{icon}",
         "format-icons": {
-            "notification": " <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
-            "none": "",
-            "dnd-notification": " <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
-            "dnd-none": "",
-            "inhibited-notification": " <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
-            "inhibited-none": "",
-            "dnd-inhibited-notification": " <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
-            "dnd-inhibited-none": ""
+            "notification": "󰂜 <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
+            "none": "󰂜",
+            "dnd-notification": "󰂛 <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
+            "dnd-none": "󰂛",
+            "inhibited-notification": "󰂜 <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
+            "inhibited-none": "󰂜",
+            "dnd-inhibited-notification": "󰂛 <span foreground='#ff453a' size='x-small' rise='6000'>●</span>",
+            "dnd-inhibited-none": "󰂛"
         },
         "return-type": "json",
         "exec-if": "which swaync-client",
@@ -44,10 +67,27 @@
         "on-click-right": "swaync-client -d -sw",
         "escape": false
     },
-    "custom/screenshot":{
-        "format":"",
+    "custom/screenshot": {
+        "format": "󰄀",
+        "tooltip-format": "Left: full screenshot, right: area",
         "on-click": "~/.config/hypr/scripts/screenshot_full",
         "on-click-right":"~/.config/hypr/scripts/screenshot_area"
+    },
+    "custom/theme": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 60,
+        "signal": 9,
+        "exec": "~/.config/hypr/scripts/theme",
+        "on-click": "~/.config/hypr/scripts/theme cycle"
+    },
+    "custom/warmth": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": "once",
+        "signal": 8,
+        "exec": "~/.config/hypr/scripts/warmth",
+        "on-click": "~/.config/hypr/scripts/warmth toggle"
     },
     //Modules configuration
     "include": [

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Warm / night-shift mode toggle using hyprsunset (Hyprland blue-light filter).
+# Usage:
+#   warmth            -> print waybar JSON status
+#   warmth toggle     -> turn warm mode on/off, then refresh waybar
+
+TEMP=3500   # colour temperature in Kelvin when warm mode is on (lower = warmer)
+
+ICON_ON=$(printf '\U000F1A4C')   # md-lightbulb_night (warm mode active)
+ICON_OFF=$(printf '\U000F0336')  # md-lightbulb_outline (warm mode off)
+
+is_on() { pgrep -x hyprsunset >/dev/null; }
+
+case "$1" in
+    toggle)
+        if is_on; then
+            pkill -x hyprsunset
+        else
+            hyprsunset -t "$TEMP" >/dev/null 2>&1 &
+            disown
+        fi
+        # Nudge waybar to re-run this script's status output immediately.
+        pkill -RTMIN+8 waybar
+        ;;
+    *)
+        if is_on; then
+            printf '{"text":"%s","tooltip":"Warm mode on (%sK) - click to disable","class":"active","alt":"on"}\n' "$ICON_ON" "$TEMP"
+        else
+            printf '{"text":"%s","tooltip":"Warm mode off - click for night shift","class":"inactive","alt":"off"}\n' "$ICON_OFF"
+        fi
+        ;;
+esac

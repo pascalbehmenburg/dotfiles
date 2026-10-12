@@ -1,25 +1,11 @@
+/* Colors live in themes/{dark,light}.css; colors.css symlinks to the active one. */
+@import url("colors.css");
 :root {
-  --cc-bg: rgba(28, 28, 30, 0.78);
-  --noti-border-color: rgba(255, 255, 255, 0.08);
-  --noti-bg: 28, 28, 30;
-  --noti-bg-alpha: 0.88;
-  --noti-bg-darker: rgba(22, 22, 24, 0.95);
-  --noti-bg-hover: rgba(44, 44, 46, 0.95);
-  --noti-bg-focus: rgba(58, 58, 60, 0.85);
-  --noti-close-bg: rgba(255, 255, 255, 0.10);
-  --noti-close-bg-hover: rgba(255, 69, 58, 0.85);
-  --text-color: #f2f2f7;
-  --text-color-disabled: rgba(235, 235, 245, 0.6);
-  --bg-selected: #0a84ff;
   --notification-icon-size: 44px;
   --notification-app-icon-size: 18px;
   --notification-group-icon-size: 24px;
   --border: 1px solid var(--noti-border-color);
   --border-radius: 14px;
-  --notification-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.25),
-    0 8px 24px 0 rgba(0, 0, 0, 0.45),
-    0 2px 6px 0 rgba(0, 0, 0, 0.25);
   --font-size-body: 13px;
   --font-size-summary: 14px;
 }
@@ -105,11 +91,11 @@ blankwindow {
 .notification-row .notification-background .notification .notification-default-action .notification-content .body {
   font-size: var(--font-size-body);
   font-weight: 400;
-  color: rgba(235, 235, 245, 0.78);
+  color: var(--text-color-body);
   margin-top: 2px;
 }
 
-/* Close (X) button — top right, macOS-ish */
+/* Close (X) button, top right, macOS-ish */
 .close-button {
   background: var(--noti-close-bg);
   color: var(--text-color);
@@ -135,22 +121,22 @@ blankwindow {
   margin: 6px;
   padding: 6px 10px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--fill);
   color: var(--text-color);
   border: none;
   box-shadow: none;
 }
 
 .notification-row .notification-background .notification .notification-action:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--fill-hover);
 }
 
 /* Inline reply */
 .notification-row .notification-background .notification .notification-action .inline-reply {
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--input-bg);
   color: var(--text-color);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: var(--border);
   padding: 6px 8px;
 }
 
@@ -195,11 +181,9 @@ blankwindow {
 /* === Control center === */
 .control-center {
   background: var(--cc-bg);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--cc-border);
   border-radius: 18px;
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.25),
-    0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--cc-shadow);
   padding: 14px;
   margin: 12px;
 }
@@ -220,7 +204,7 @@ blankwindow {
 }
 
 .widget-title > button {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--fill);
   color: var(--text-color);
   border: none;
   border-radius: 8px;
@@ -231,7 +215,7 @@ blankwindow {
 }
 
 .widget-title > button:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: var(--fill-hover);
 }
 
 .widget-dnd {
@@ -242,7 +226,7 @@ blankwindow {
 }
 
 .widget-dnd > switch {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--switch-bg);
   border-radius: 100px;
   border: none;
   box-shadow: none;

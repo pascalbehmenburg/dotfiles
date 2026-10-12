@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# wofi loads its stylesheet as a string, so a relative @import of the waybar palette
+# never resolves. Prepend the active palette (light/dark) and hand wofi the combined file.
+css="${XDG_RUNTIME_DIR:-/tmp}/wofi-style.css"
+cat "$HOME/.config/waybar/colors.css" "$HOME/.config/wofi/style.css" > "$css"
+exec wofi --style "$css" "$@"
