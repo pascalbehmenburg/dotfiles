@@ -16,3 +16,6 @@ fish_add_path $HOME/.local/bin
 # bun
 set --export BUN_INSTALL "$HOME/.bun"
 set --export PATH $BUN_INSTALL/bin $PATH
+
+# Cowork stack secrets
+test -f /home/pascal/.config/cowork-secrets.fish; and source /home/pascal/.config/cowork-secrets.fish

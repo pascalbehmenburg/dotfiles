@@ -1,0 +1,26 @@
+/* Light palette. colors.css symlinks here; swapped by hypr/scripts/theme. */
+:root {
+  --cc-bg: rgba(246, 246, 248, 0.86);
+  --cc-border: rgba(0, 0, 0, 0.08);
+  --cc-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 16px 40px rgba(0, 0, 0, 0.18);
+  --noti-border-color: rgba(0, 0, 0, 0.08);
+  --noti-bg: 246, 246, 248;
+  --noti-bg-alpha: 0.92;
+  --noti-bg-darker: rgba(236, 236, 240, 0.95);
+  --noti-bg-hover: rgba(234, 234, 238, 0.96);
+  --noti-bg-focus: rgba(220, 220, 226, 0.9);
+  --noti-close-bg: rgba(0, 0, 0, 0.08);
+  --noti-close-bg-hover: rgba(255, 59, 48, 0.85);
+  --text-color: #1d1d1f;
+  --text-color-body: rgba(60, 60, 67, 0.85);
+  --text-color-disabled: rgba(60, 60, 67, 0.6);
+  --fill: rgba(0, 0, 0, 0.05);
+  --fill-hover: rgba(0, 0, 0, 0.1);
+  --switch-bg: rgba(0, 0, 0, 0.12);
+  --input-bg: rgba(0, 0, 0, 0.05);
+  --bg-selected: #007aff;
+  --notification-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 8px 24px 0 rgba(0, 0, 0, 0.14),
+    0 2px 6px 0 rgba(0, 0, 0, 0.08);
+}
