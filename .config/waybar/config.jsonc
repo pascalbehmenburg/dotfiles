@@ -18,6 +18,7 @@
         "group/quick",
         "pulseaudio",
         "network",
+        "custom/vpn",
         "group/system",
         "clock",
         "tray",
@@ -88,6 +89,16 @@
         "signal": 8,
         "exec": "~/.config/hypr/scripts/warmth",
         "on-click": "~/.config/hypr/scripts/warmth toggle"
+    },
+    // Polls so connects made outside waybar (nmtui, nmcli) show up too.
+    "custom/vpn": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 5,
+        "signal": 10,
+        "exec": "~/.config/hypr/scripts/vpn",
+        "on-click": "~/.config/hypr/scripts/vpn toggle",
+        "on-click-right": "alacritty -e nmtui-connect"
     },
     //Modules configuration
     "include": [

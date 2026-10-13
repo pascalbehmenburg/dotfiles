@@ -47,6 +47,7 @@ window#waybar.empty .modules-center {
 #tray,
 #custom-screenshot,
 #custom-warmth,
+#custom-vpn,
 #custom-theme,
 #custom-notification {
     padding: 0 10px;
@@ -56,6 +57,7 @@ window#waybar.empty .modules-center {
 /* Icon-only buttons sit a little tighter. */
 #custom-screenshot,
 #custom-warmth,
+#custom-vpn,
 #custom-theme,
 #network,
 #custom-notification {
@@ -71,6 +73,7 @@ window#waybar.empty .modules-center {
 #pulseaudio,
 #custom-screenshot,
 #custom-warmth,
+#custom-vpn,
 #custom-theme,
 #custom-notification {
     font-feature-settings: "tnum";
@@ -85,6 +88,7 @@ window#waybar.empty .modules-center {
 #pulseaudio:hover,
 #custom-screenshot:hover,
 #custom-warmth:hover,
+#custom-vpn:hover,
 #custom-theme:hover,
 #custom-notification:hover {
     background: @hover_bg;
@@ -92,6 +96,14 @@ window#waybar.empty .modules-center {
 
 #custom-warmth.active {
     color: #ffb454;
+}
+
+#custom-vpn.active {
+    color: #30d158;
+}
+
+#custom-vpn.inactive {
+    opacity: .5;
 }
 
 #pulseaudio.muted,

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# VPN indicator / toggle for NetworkManager VPN connections.
+# Usage:
+#   vpn            -> print waybar JSON status
+#   vpn toggle     -> bring the VPN up or down, then refresh waybar
+#
+# Targets $VPN_CONNECTION if set, otherwise the first saved VPN connection.
+# Credentials live in NetworkManager, never in this script.
+
+ICON=$(printf '\U000F0582')  # md-vpn
+
+active_vpn() {
+    nmcli -t -f NAME,TYPE connection show --active | awk -F: '$2 == "vpn" || $2 == "wireguard" { print $1; exit }'
+}
+
+target_vpn() {
+    if [ -n "$VPN_CONNECTION" ]; then
+        echo "$VPN_CONNECTION"
+    else
+        nmcli -t -f NAME,TYPE connection show | awk -F: '$2 == "vpn" || $2 == "wireguard" { print $1; exit }'
+    fi
+}
+
+case "$1" in
+    toggle)
+        active=$(active_vpn)
+        if [ -n "$active" ]; then
+            nmcli connection down id "$active" >/dev/null 2>&1 \
+                || notify-send -u critical "VPN" "Could not disconnect $active"
+        else
+            target=$(target_vpn)
+            if [ -z "$target" ]; then
+                notify-send "VPN" "No VPN connection configured"
+            else
+                nmcli connection up id "$target" >/dev/null 2>&1 \
+                    || notify-send -u critical "VPN" "Could not connect $target"
+            fi
+        fi
+        pkill -RTMIN+10 waybar
+        ;;
+    *)
+        active=$(active_vpn)
+        if [ -n "$active" ]; then
+            ip=$(nmcli -t -f IP4.ADDRESS connection show id "$active" 2>/dev/null | head -n1 | cut -d: -f2)
+            printf '{"text":"%s","tooltip":"VPN %s connected (%s) - click to disconnect","class":"active","alt":"on"}\n' "$ICON" "$active" "$ip"
+        else
+            target=$(target_vpn)
+            printf '{"text":"%s","tooltip":"VPN %s off - click to connect","class":"inactive","alt":"off"}\n' "$ICON" "${target:-none}"
+        fi
+        ;;
+esac
