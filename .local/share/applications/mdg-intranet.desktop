@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=MDG AI
+Comment=modern digital group intranet
+Exec=chromium "--app=https://intranet.modern-digital.de/?pwa=1"
+Icon=/home/pascal/.local/share/icons/modern-digital-intranet.png
+StartupWMClass=chrome-intranet.modern-digital.de__-Default
+Categories=Office;
+Terminal=false

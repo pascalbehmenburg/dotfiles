@@ -21,6 +21,10 @@ for _ in $(seq 1 40); do
 done
 
 hyprctl dispatch exec "[workspace 1 silent] zen-browser"
+hyprctl dispatch exec "[workspace 2 silent] t3code"
 hyprctl dispatch exec "[workspace 3 silent] obsidian"
+# Workspace comes from a class rule in windowrules.conf: chromium hands the
+# launch to an already running instance, so a PID-bound rule would miss it.
+hyprctl dispatch exec "gtk-launch mdg-intranet"
 hyprctl dispatch exec "[workspace 4 silent] thunderbird"
 hyprctl dispatch exec "[workspace 5 silent] discord"
