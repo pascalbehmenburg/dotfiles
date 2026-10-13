@@ -47,7 +47,8 @@ Hyprland border/shadow colors (`hypr/config/themes/{dark,light}.conf`), swaync n
 easyeffects/
   output/           EasyEffects output presets (bass boost)
   input/            EasyEffects input presets (mic noise reduction)
-desktop.webp        Wallpaper (swaybg)
+desktop.webp        Wallpaper, dark theme (swaybg)
+desktop-light.webp  Wallpaper, light theme (swapped by hypr/scripts/theme)
 .gitconfig          Git identity & credential helper
 setup.sh            Interactive setup script
 ```

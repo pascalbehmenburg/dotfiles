@@ -6,6 +6,7 @@
 #                             the theme when sunrise/sunset has passed)
 #   theme cycle            -> light -> dark -> auto -> light ...
 #   theme light|dark|auto  -> set a mode directly
+#   theme wallpaper        -> (re)start swaybg with the applied theme's wallpaper
 
 # Location used for sunrise/sunset in auto mode (decimal degrees, east/north positive).
 LAT=52.52
@@ -23,6 +24,9 @@ KVANTUM_LIGHT="KvGnome"
 ICON_LIGHT=$(printf '\U000F05A8')  # md-white_balance_sunny
 ICON_DARK=$(printf '\U000F0594')   # md-weather_night
 ICON_AUTO=$(printf '\U000F050E')   # md-theme_light_dark
+
+WALLPAPER_DARK="$HOME/repos/dotfiles/desktop.webp"
+WALLPAPER_LIGHT="$HOME/repos/dotfiles/desktop-light.webp"
 
 mkdir -p "$STATE_DIR"
 
@@ -68,6 +72,14 @@ else:
 EOF
 }
 
+# Restarts swaybg with the wallpaper of the given (or currently applied) theme.
+set_wallpaper() {
+    local target=${1:-$(get_applied)} img
+    [[ $target == light ]] && img=$WALLPAPER_LIGHT || img=$WALLPAPER_DARK
+    pkill -x swaybg
+    setsid -f swaybg -o '*' -i "$img" -m fill >/dev/null 2>&1
+}
+
 apply() {
     local target=$1 gtk kvantum scheme
     if [[ $target == light ]]; then
@@ -111,6 +123,8 @@ apply() {
     local css
     css=$(<"$waybar/style.css") && printf '%s\n' "$css" > "$waybar/style.css"
 
+    set_wallpaper "$target"
+
     echo "$target" > "$APPLIED_FILE"
 }
 
@@ -142,6 +156,9 @@ case "$1" in
         ;;
     light|dark|auto)
         set_mode "$1"
+        ;;
+    wallpaper)
+        set_wallpaper
         ;;
     *)
         mode=$(get_mode)
