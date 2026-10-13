@@ -32,8 +32,12 @@ case "$1" in
             if [ -z "$target" ]; then
                 notify-send "VPN" "No VPN connection configured"
             else
-                nmcli connection up id "$target" >/dev/null 2>&1 \
-                    || notify-send -u critical "VPN" "Could not connect $target"
+                # On a rejected login openvpn keeps retrying and nm-applet pops a
+                # password prompt each round, so tear the attempt down on failure.
+                if ! nmcli --wait 20 connection up id "$target" >/dev/null 2>&1; then
+                    nmcli connection down id "$target" >/dev/null 2>&1
+                    notify-send -u critical "VPN" "Could not connect $target"
+                fi
             fi
         fi
         pkill -RTMIN+10 waybar
